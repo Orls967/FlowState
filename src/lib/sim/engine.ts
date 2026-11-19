@@ -54,6 +54,7 @@ export interface TimeSample {
   meanTravelTime: number;
   throughput: number;
   emissions: number;
+  meanDensity: number;
 }
 
 export interface LiveStats {
@@ -78,6 +79,8 @@ export interface LiveStats {
   dropped: number;
   /** panjang antrean (m) di ujung hilir koridor; 0 bila tidak ada koridor */
   queueLength: number;
+  /** kepadatan rata-rata jaringan (kend/km/lajur) */
+  meanDensity: number;
 }
 
 export interface SelectedInfo {
@@ -246,6 +249,8 @@ export class Simulation {
   private corridorLinks: number[] = [];
   private corridorStart: number[] = [];
   corridorLength = 0;
+  /** total panjang lajur (km) */
+  private laneKm = 0;
 
   constructor(cfg: SimConfig) {
     this.cfg = cfg;
@@ -275,6 +280,7 @@ export class Simulation {
           n.cycle = n.greens.reduce((s, g) => s + g + 5, 0);
         }
     }
+    for (const l of this.net.links) this.laneKm += (l.length * l.lanes) / 1000;
     for (const l of this.net.links) {
       this.ema[l.index] = this.baseFree(l);
       this.linkCost[l.index] = this.ema[l.index];
@@ -541,7 +547,8 @@ export class Simulation {
     const nodes = this.net.nodes;
     const o = nodes[trip.from];
     const d = nodes[trip.to];
-    const costs: number[] = [privCost + 240];
+    // biaya pribadi: waktu tempuh + parkir/BBM/mencari parkir (setara ±7 menit) — dikalibrasi untuk peragaan
+    const costs: number[] = [privCost + 420];
     const kinds: { mode: number; line: number }[] = [{ mode: 0, line: -1 }];
     for (const line of this.busLines) {
       if (!line.pathF) continue;
@@ -556,25 +563,25 @@ export class Simulation {
         d.y,
       );
       if (a.i === b.i) continue;
-      const walk = ((a.d + b.d) * 1.3) / WALK_SPEED;
-      if (walk > 1400) continue;
+      const walk = accessTime(a.d) + accessTime(b.d);
+      if (walk > 1200) continue;
       const busSpeed = line.dedicated ? 9 : this.lineSpeed(line);
       const ivt = Math.abs(line.stopDist[b.i] - line.stopDist[a.i]) / busSpeed + Math.abs(b.i - a.i) * 15;
-      costs.push(ivt + 2 * walk + 1.5 * (line.headway / 2) + (line.dedicated ? 30 : 120));
+      costs.push(ivt + 1.4 * walk + 1.2 * (line.headway / 2) + (line.dedicated ? -30 : 60));
       kinds.push({ mode: 1, line: line.index });
     }
     this.mrtLines.forEach((line, k) => {
       const a = nearestIndex(line.pts, o.x, o.y);
       const b = nearestIndex(line.pts, d.x, d.y);
       if (a.i === b.i) return;
-      const walk = ((a.d + b.d) * 1.3) / WALK_SPEED;
-      if (walk > 1600) return;
+      const walk = accessTime(a.d) + accessTime(b.d);
+      if (walk > 1200) return;
       const ivt = Math.abs(line.cum[b.i] - line.cum[a.i]) / MRT_SPEED + Math.abs(b.i - a.i) * 30;
-      costs.push(ivt + 2 * walk + 1.5 * (line.headway / 2) + 20);
+      costs.push(ivt + 1.4 * walk + 1.2 * (line.headway / 2) - 60);
       kinds.push({ mode: 2, line: k });
     });
     if (costs.length === 1) return 0;
-    const mu = 1 / 150;
+    const mu = 1 / 100;
     const min = Math.min(...costs);
     const w = costs.map((c) => Math.exp(-mu * (c - min)));
     const pick = kinds[this.rng.weighted(w)];
@@ -1346,6 +1353,7 @@ export class Simulation {
       meanTravelTime: s.meanTravelTime,
       throughput: s.throughput,
       emissions: s.emissionsTotal,
+      meanDensity: s.meanDensity,
     });
     if (this.samples.length > 3000) this.samples.shift();
   }
@@ -1373,9 +1381,11 @@ export class Simulation {
     let sv = 0;
     let sv2 = 0;
     let stopped = 0;
+    let onLinks = 0;
     for (const u of this.vehicles) {
       if (!u) continue;
       n++;
+      if (u.s >= 0) onLinks++;
       sv += u.v;
       sv2 += u.v * u.v;
       if (u.v < 0.5) stopped++;
@@ -1407,6 +1417,7 @@ export class Simulation {
       lineRiders: [...this.busLines.map((l) => l.riders), ...this.mrtLines.map((l) => l.riders)],
       dropped: this.dropped,
       queueLength: this.corridorQueue(),
+      meanDensity: this.laneKm > 0 ? onLinks / this.laneKm : 0,
     };
   }
 
@@ -1594,6 +1605,13 @@ export function bezier(p: Float64Array, t: number): [number, number] {
   const c = 3 * m * t * t;
   const d = t * t * t;
   return [a * p[0] + b * p[2] + c * p[4] + d * p[6], a * p[1] + b * p[3] + c * p[5] + d * p[7]];
+}
+
+/** Waktu akses ke halte/stasiun (s): jalan kaki ≤ 400 m, selebihnya feeder/ojek (+1 menit menunggu). */
+export function accessTime(dist: number): number {
+  const d = dist * 1.3;
+  if (d <= 400) return d / WALK_SPEED;
+  return 400 / WALK_SPEED + 60 + (d - 400) / 5.5;
 }
 
 function nearestIndex(

@@ -7,7 +7,7 @@
 | 3 | Generator kota + rendering instanced + Kota Hidup | ✅ |
 | 4 | Editor Jalan + simpan/muat/bagikan | ✅ |
 | 5 | Lab Fenomena | ✅ |
-| 6 | Transportasi Umum | ⏳ |
+| 6 | Transportasi Umum | ✅ |
 | 7 | Analitik & perbandingan skenario | ⏳ |
 | 8 | Glosarium, pencarian, Tentang, optimasi HP, test, README | ⏳ |
 
@@ -59,3 +59,12 @@
 - Perbaikan model: konflik gabung (merge) di simpang prioritas hanya memblokir bila lajur tujuan sama dan belum melewati titik gabung;
   sesama pendekat utama bergiliran berdasarkan waktu tiba; penghitung "berhenti" memakai histeresis; metrik panjang antrean koridor.
 - Kamera membingkai jaringan sesuai rasio layar; `near` kamera & kabut mengikuti jarak (menghindari z-fighting lapisan jalan).
+
+## Fase 6 — catatan
+- Halaman Transportasi Umum: jalur bus/BRT (ketuk simpang sebagai halte) dan MRT layang (ketuk peta sebagai stasiun),
+  contoh cepat koridor BRT & MRT utara–selatan, selang keberangkatan 2–30 menit, lajur khusus BRT (ruas ≥ 2 lajur ditandai lajur bus).
+- Pilihan moda langsung (bar porsi mobil/motor/bus/MRT), penumpang per jalur, heatmap.
+- Perbandingan tanpa tampilan: dua Worker paralel (tanpa vs dengan jalur, seed sama, 1 jam mulai 06.45, permintaan jam sibuk tetap) →
+  waktu tempuh, kecepatan, kepadatan, emisi relatif per perjalanan, jumlah kendaraan, porsi moda.
+  Contoh (kota bawaan, BRT + MRT): kendaraan −10%, kepadatan −11%, emisi/perjalanan −6%.
+- Model akses feeder/ojek untuk jarak > 400 m; konstanta logit dikalibrasi untuk peragaan (lihat model-notes).

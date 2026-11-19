@@ -38,8 +38,15 @@ Zona (permukiman, kantor, sekolah, mal) pada simpang. Tujuan perjalanan punya pr
 Komposisi kendaraan pribadi bergaya kota Indonesia: ±55% motor.
 
 ## Pemilihan moda
-Logit multinomial atas biaya umum (detik): pribadi = waktu tempuh A* + 4 menit (parkir/biaya);
-bus/BRT/MRT = waktu dalam kendaraan + 2×jalan kaki + 1,5×menunggu (½ selang) + konstanta moda.
+Logit multinomial (skala 1/100 s) atas biaya umum dalam detik:
+- pribadi = waktu tempuh A* saat ini + 7 menit (parkir, BBM, mencari parkir);
+- bus/BRT/MRT = waktu dalam kendaraan + 1,4 × waktu akses + 1,2 × waktu tunggu (½ selang) + konstanta moda
+  (BRT −30 s, bus campur +60 s, MRT −60 s). Akses: jalan kaki sampai 400 m, selebihnya feeder/ojek 20 km/jam + 1 menit.
+- Hanya perjalanan yang asal dan tujuannya dekat jalur yang sama yang mempertimbangkan angkutan umum (tanpa transfer).
+
+Konstanta ini **dikalibrasi untuk peragaan**, bukan dari survei. Satu jalur biasanya hanya menarik beberapa persen
+perjalanan; jangkauan (banyak jalur), frekuensi, dan kemacetan jalan menentukan seberapa besar pergeserannya.
+Bus yang hampir kosong menaikkan emisi per perjalanan — ini disengaja agar terlihat bahwa angkutan umum perlu penumpang.
 
 ## Emisi relatif
 Indeks relatif (mobil = 1 per km) ditambah komponen diam (idle). Bukan gram CO₂ sesungguhnya.
