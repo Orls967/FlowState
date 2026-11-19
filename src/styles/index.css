@@ -1,0 +1,149 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * Design tokens FlowState — estetika "peta transit & perencanaan kota".
+ * Terang = kertas peta / cetak biru. Gelap = kota malam.
+ * Semua warna lewat CSS variables agar bisa dipakai juga oleh scene 3D & grafik.
+ */
+:root {
+  --fs-paper: #f3efe4;
+  --fs-surface: #fbf9f3;
+  --fs-surface-2: #e9e3d4;
+  --fs-ink: #1b1f24;
+  --fs-ink-2: #4d5560;
+  --fs-line: #cfc6b2;
+  --fs-line-strong: #1b1f24;
+  --fs-grid: rgba(27, 31, 36, 0.06);
+  --fs-accent: #c8431a;
+  --fs-accent-soft: #f2d5c6;
+  --fs-on-accent: #ffffff;
+  --fs-focus: #1f5fbf;
+  --fs-dens-0: #2b8a5a;
+  --fs-dens-1: #e8b100;
+  --fs-dens-2: #b3261e;
+  --fs-series-a: #c8431a;
+  --fs-series-b: #1f5fbf;
+  --fs-shadow: 0 1px 0 rgba(27, 31, 36, 0.12);
+}
+
+:root[data-theme='dark'] {
+  --fs-paper: #0d1117;
+  --fs-surface: #151b23;
+  --fs-surface-2: #1d2530;
+  --fs-ink: #e9e6dd;
+  --fs-ink-2: #a3abb5;
+  --fs-line: #2e3743;
+  --fs-line-strong: #e9e6dd;
+  --fs-grid: rgba(233, 230, 221, 0.045);
+  --fs-accent: #ff7a45;
+  --fs-accent-soft: #3a2218;
+  --fs-on-accent: #1b1f24;
+  --fs-focus: #7fb2ff;
+  --fs-dens-0: #4fc08d;
+  --fs-dens-1: #ffd23f;
+  --fs-dens-2: #ff5a4e;
+  --fs-series-a: #ff7a45;
+  --fs-series-b: #7fb2ff;
+  --fs-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-paper: var(--fs-paper);
+  --color-surface: var(--fs-surface);
+  --color-surface-2: var(--fs-surface-2);
+  --color-ink: var(--fs-ink);
+  --color-ink-2: var(--fs-ink-2);
+  --color-line: var(--fs-line);
+  --color-line-strong: var(--fs-line-strong);
+  --color-accent: var(--fs-accent);
+  --color-accent-soft: var(--fs-accent-soft);
+  --color-on-accent: var(--fs-on-accent);
+  --color-focus: var(--fs-focus);
+  --color-dens-0: var(--fs-dens-0);
+  --color-dens-1: var(--fs-dens-1);
+  --color-dens-2: var(--fs-dens-2);
+  --color-series-a: var(--fs-series-a);
+  --color-series-b: var(--fs-series-b);
+  --font-display: 'Jost', 'Futura', 'Century Gothic', system-ui, sans-serif;
+  --font-body: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--fs-paper);
+  background-image:
+    linear-gradient(var(--fs-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fs-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--fs-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--fs-focus);
+  outline-offset: 2px;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Label bergaya papan stasiun: huruf kapital, spasi lebar, mono kecil */
+.station-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fs-ink-2);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+}
+.skip-link:focus {
+  left: 8px;
+  top: 8px;
+  z-index: 100;
+  background: var(--fs-surface);
+  padding: 8px 12px;
+  border: 2px solid var(--fs-line-strong);
+}
+
+input[type='range'] {
+  accent-color: var(--fs-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

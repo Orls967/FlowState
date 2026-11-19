@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="id" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="FlowState — simulasi lalu lintas & kota 3D interaktif untuk edukasi. 100% di peramban, tanpa akun." />
+    <meta name="theme-color" content="#f3efe4" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>FlowState — Simulasi Lalu Lintas & Kota</title>
+    <script>
+      // Terapkan tema & bahasa sebelum render pertama (tanpa kedip).
+      (function () {
+        var theme = 'system';
+        var lang = 'id';
+        try {
+          theme = localStorage.getItem('flowstate.theme') || 'system';
+          lang = localStorage.getItem('flowstate.lang') || 'id';
+        } catch (e) {}
+        var dark = theme === 'dark' || (theme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var root = document.documentElement;
+        root.setAttribute('data-theme', dark ? 'dark' : 'light');
+        root.setAttribute('lang', lang === 'en' ? 'en' : 'id');
+        root.style.colorScheme = dark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>FlowState membutuhkan JavaScript. / FlowState requires JavaScript.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
