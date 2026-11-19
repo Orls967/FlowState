@@ -192,6 +192,10 @@ export const en: Messages = {
     queue: 'Queue length',
     stops: 'Stops per vehicle',
     delay: 'Mean delay',
+    results: 'Results per variant',
+    resultsHint: 'Averages since warm-up ended. Switch variants to fill the other columns.',
+    warmingUp: 'Warming up… {{s}} s to go',
+    source: 'Source',
     stdSpeed: 'Speed variation',
   },
   transit: {

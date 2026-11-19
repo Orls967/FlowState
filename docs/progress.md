@@ -6,7 +6,7 @@
 | 2 | Inti simulasi di Worker + test (IDM, graf jalan, routing, sinyal) | ✅ |
 | 3 | Generator kota + rendering instanced + Kota Hidup | ✅ |
 | 4 | Editor Jalan + simpan/muat/bagikan | ✅ |
-| 5 | Lab Fenomena | ⏳ |
+| 5 | Lab Fenomena | ✅ |
 | 6 | Transportasi Umum | ⏳ |
 | 7 | Analitik & perbandingan skenario | ⏳ |
 | 8 | Glosarium, pencarian, Tentang, optimasi HP, test, README | ⏳ |
@@ -47,3 +47,15 @@
   titik baru menempel ke simpang atau membagi ruas terdekat, properti ruas (lajur, batas kecepatan, satu arah, lajur bus)
   dan simpang (kontrol, zebra cross, durasi hijau per fase, offset, zona & bobot).
 - Simpan/muat JSON, salin tautan bagikan, kanvas kosong / dari generator, lanjut ke Analitik.
+
+## Fase 5 — catatan
+- Enam eksperimen terpandu (`src/content/phenomena.ts` + `src/content/scenarios.ts`): Sugiyama, rem mendadak,
+  Paradoks Braess, zipper vs merge awal, gelombang hijau, bundaran vs lampu. Tiap eksperimen punya varian, slider,
+  langkah Coba/Amati, penjelasan, batasan, dan tabel hasil per varian (rata-rata setelah pemanasan).
+- Efek tiap fenomena dikunci dengan unit test (`tests/unit/scenarios.test.ts`) — mis. jalan pintas Braess
+  menaikkan waktu tempuh ±10% pada 1.500 kend/jam, zipper memperpendek antrean, gelombang hijau mengurangi berhenti.
+- Diagram ruang–waktu bergulir (canvas) untuk koridor; tombol rem mendadak.
+- Glosarium dwibahasa (32 istilah, Zod) + autolink istilah di semua teks (singkatan kapital seperti MOBIL tidak cocok dengan kata "mobil").
+- Perbaikan model: konflik gabung (merge) di simpang prioritas hanya memblokir bila lajur tujuan sama dan belum melewati titik gabung;
+  sesama pendekat utama bergiliran berdasarkan waktu tiba; penghitung "berhenti" memakai histeresis; metrik panjang antrean koridor.
+- Kamera membingkai jaringan sesuai rasio layar; `near` kamera & kabut mengikuti jarak (menghindari z-fighting lapisan jalan).

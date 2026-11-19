@@ -57,13 +57,9 @@ describe('serialisasi kota', () => {
 
 describe('operasi editor', () => {
   it('tambah simpang & ruas, tanpa duplikat', () => {
-    let d = gridCity(1, 1, 100);
-    let a: number;
-    let b: number;
-    [d, a] = addNode(d, 0, 200);
-    [d, b] = addNode(d, 100, 200);
-    let rid: number | null;
-    [d, rid] = addRoad(d, a, b);
+    const [d1, a] = addNode(gridCity(1, 1, 100), 0, 200);
+    const [d2a, b] = addNode(d1, 100, 200);
+    const [d, rid] = addRoad(d2a, a, b);
     expect(rid).not.toBeNull();
     const [d2, rid2] = addRoad(d, b, a);
     expect(rid2).toBe(rid);

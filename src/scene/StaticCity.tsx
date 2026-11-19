@@ -51,12 +51,17 @@ export function writeMatrix(
 }
 
 function Roads({ doc, net, decor }: { doc: CityDoc; net: Network; decor: Decor | null }) {
-  const { preset } = useSceneCtx();
+  const { preset, theme } = useSceneCtx();
   const geo = useMemo(() => buildRoadGeometry(doc, net, decor, preset), [doc, net, decor, preset]);
   useEffect(() => () => geo.dispose(), [geo]);
   return (
     <mesh geometry={geo} receiveShadow>
-      <meshStandardMaterial vertexColors side={DoubleSide} roughness={0.95} metalness={0} />
+      {theme === 'dark' ? (
+        // malam: jalan tampil seperti peta bercahaya redup, tidak bergantung pencahayaan
+        <meshBasicMaterial vertexColors side={DoubleSide} />
+      ) : (
+        <meshStandardMaterial vertexColors side={DoubleSide} roughness={0.95} metalness={0} />
+      )}
     </mesh>
   );
 }

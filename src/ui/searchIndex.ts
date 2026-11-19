@@ -1,6 +1,8 @@
 import type { TFunction } from 'i18next';
 import { MODULES } from './modules';
 import type { Lang } from '../content/types';
+import { PHENOMENA } from '../content/phenomena';
+import { GLOSSARY } from '../content/glossary';
 
 export interface SearchItem {
   id: string;
@@ -13,7 +15,7 @@ export interface SearchItem {
   keywords: string;
 }
 
-export function buildSearchIndex(t: TFunction, _lang: Lang): SearchItem[] {
+export function buildSearchIndex(t: TFunction, lang: Lang): SearchItem[] {
   const items: SearchItem[] = [];
   for (const m of MODULES) {
     items.push({
@@ -23,6 +25,26 @@ export function buildSearchIndex(t: TFunction, _lang: Lang): SearchItem[] {
       subtitle: m.code,
       to: m.path,
       keywords: `${t(`nav.${m.key}`)} ${m.code}`,
+    });
+  }
+  for (const p of PHENOMENA) {
+    items.push({
+      id: `p-${p.id}`,
+      group: 'phenomena',
+      title: p.title[lang],
+      subtitle: p.code,
+      to: `/lab/${p.id}`,
+      keywords: `${p.title.id} ${p.title.en} ${p.summary[lang]}`,
+    });
+  }
+  for (const g of GLOSSARY) {
+    items.push({
+      id: `g-${g.id}`,
+      group: 'glossary',
+      title: g.term[lang],
+      subtitle: g.short[lang],
+      to: `/glossary#${g.id}`,
+      keywords: `${g.term.id} ${g.term.en} ${g.aliases.id.join(' ')} ${g.aliases.en.join(' ')}`,
     });
   }
   items.push(

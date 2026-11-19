@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { MapControls } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
-import { Color, DirectionalLight, HemisphereLight, type Fog } from 'three';
+import { Color, DirectionalLight, Fog, HemisphereLight } from 'three';
 import type { MapControls as MapControlsImpl } from 'three-stdlib';
 import { useSettings } from '../store/settings';
 import { PRESETS, nightFactor, sunDirection } from './themePresets';
@@ -23,6 +23,8 @@ export interface CityCanvasProps {
   topDown?: boolean;
   className?: string;
   testId?: string;
+  /** seberapa banyak kota yang dibingkai kamera awal (1 = seluruhnya) */
+  fit?: number;
 }
 
 function Ground({
@@ -54,9 +56,15 @@ function Ground({
         onPointerMove={onMove ? (e) => onMove(e.point.x, -e.point.z) : undefined}
       >
         <planeGeometry args={[w, h]} />
-        <meshStandardMaterial color={preset.ground} roughness={1} />
+        <meshStandardMaterial
+          color={preset.ground}
+          roughness={1}
+          polygonOffset
+          polygonOffsetFactor={2}
+          polygonOffsetUnits={8}
+        />
       </mesh>
-      <gridHelper args={[gridSize, gridSize / 25, preset.grid, preset.grid]} position={[cx, -0.02, -cy]} />
+      <gridHelper args={[gridSize, gridSize / 50, preset.grid, preset.grid]} position={[cx, -0.02, -cy]} />
     </group>
   );
 }
@@ -110,22 +118,34 @@ function CameraRig({
   bounds,
   controller,
   topDown,
+  fit = 0.55,
 }: {
   bounds: Network['bounds'];
   controller?: SimController | null;
   topDown?: boolean;
+  fit?: number;
 }) {
   const controls = useRef<MapControlsImpl>(null);
-  const { camera } = useThree();
+  const { camera, size, scene } = useThree();
+  const aspect = size.width / Math.max(1, size.height);
   const cx = (bounds.minX + bounds.maxX) / 2;
   const cy = (bounds.minY + bounds.maxY) / 2;
   const span = Math.max(200, bounds.maxX - bounds.minX, bounds.maxY - bounds.minY);
-  const key = `${Math.round(cx)}:${Math.round(cy)}:${Math.round(span)}:${topDown ? 1 : 0}`;
+  const key = `${Math.round(cx)}:${Math.round(cy)}:${Math.round(span)}:${topDown ? 1 : 0}:${aspect > 1 ? 1 : 0}`;
   useEffect(() => {
-    const dist = span * (topDown ? 1.45 : 0.42);
+    // jarak agar lebar `span × fit` muat di layar (memperhitungkan rasio aspek layar HP yang tegak)
+    const halfFov = (45 * Math.PI) / 360;
+    const dist =
+      ((span * fit) / 2 / (Math.tan(halfFov) * Math.max(0.75, Math.min(aspect, 1.3)))) * (topDown ? 1.1 : 1);
     if (topDown) camera.position.set(cx, dist, -cy + 0.01);
     else camera.position.set(cx + dist * 0.35, dist * 0.62, -cy + dist * 0.7);
-    camera.far = Math.max(4000, span * 6);
+    camera.far = Math.max(4000, span * 6, dist * 6);
+    // near ikut jarak agar presisi depth cukup untuk lapisan jalan yang tipis
+    camera.near = Math.max(1, Math.min(40, dist * 0.02));
+    if (scene.fog instanceof Fog) {
+      scene.fog.near = Math.max(span * 1.2, dist * 1.4);
+      scene.fog.far = scene.fog.near * 2.6;
+    }
     camera.updateProjectionMatrix();
     controls.current?.target.set(cx, 0, -cy);
     controls.current?.update();
@@ -205,6 +225,7 @@ export function CityCanvas({
   topDown,
   className,
   testId,
+  fit,
 }: CityCanvasProps) {
   const theme = useSettings((s) => s.theme);
   const quality = useSettings((s) => s.quality);
@@ -229,7 +250,12 @@ export function CityCanvas({
           <fog attach="fog" args={[preset.fog, span * 1.2, span * 3.2]} />
           <DayNight controller={controller} hour={hour} />
           <Ground bounds={bounds} onClick={onGroundClick} onMove={onGroundMove} />
-          <CameraRig bounds={bounds} controller={controller} topDown={topDown} />
+          <CameraRig
+            bounds={bounds}
+            controller={controller}
+            topDown={topDown}
+            fit={fit ?? (topDown ? 1 : 0.55)}
+          />
           <QualityMonitor />
           {children}
           {q.bloom && theme === 'dark' && (

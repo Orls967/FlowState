@@ -76,6 +76,8 @@ export interface LiveStats {
   modeCounts: [number, number, number, number];
   lineRiders: number[];
   dropped: number;
+  /** panjang antrean (m) di ujung hilir koridor; 0 bila tidak ada koridor */
+  queueLength: number;
 }
 
 export interface SelectedInfo {
@@ -716,10 +718,18 @@ export class Simulation {
   private priorityClear(u: Vehicle, node: NetNode, link: NetLink, mi: number, d: number): boolean {
     const M = node.movements.length;
     // kendaraan yang sudah di dalam simpang dengan lintasan berpotongan
+    const myMv = node.movements[mi];
+    const myLane = this.targetLane(u, link, this.net.links[myMv.outLink], myMv);
     for (const slot of this.inside[node.index]) {
       const w = this.vehicles[slot]!;
       if (w.cMov < 0 || w.cMov === mi) continue;
-      if (node.conflicts[mi * M + w.cMov]) return false;
+      if (!node.conflicts[mi * M + w.cMov]) continue;
+      if (node.movements[w.cMov].outLink === myMv.outLink) {
+        // gabung ke link yang sama: hanya konflik bila lajur tujuan sama & belum melewati titik gabung
+        if (w.lane !== myLane) continue;
+        if ((w.s + w.cLen) / Math.max(1, w.cLen) > 0.45) continue;
+      }
+      return false;
     }
     const allway = node.control === 'allway';
     if (allway && u.v > 2.5 && d > 2) return false; // harus berhenti dulu
@@ -736,8 +746,12 @@ export class Simulation {
         if (wm < 0 || !node.conflicts[mi * M + wm]) continue;
         const dw = other.length - w.s;
         if (!allway && link.major) {
-          // pendekat utama hanya menunggu kendaraan utama lain yang sudah "berkomitmen"
-          if (other.major && w.committed) return false;
+          // sesama pendekat utama: yang sudah berkomitmen dan tiba lebih dulu jalan duluan
+          if (other.major && w.committed) {
+            const ttaW = dw / Math.max(w.v, 0.5);
+            const ttaU = d / Math.max(u.v, 0.5);
+            if (ttaW <= ttaU + 0.3) return false;
+          }
           continue;
         }
         if (allway || !other.major) {
@@ -1152,7 +1166,11 @@ export class Simulation {
   /** @returns 0 tetap di link, 1 pindah link, 2 selesai/dihapus */
   private move(u: Vehicle, link: NetLink): number {
     const [ds, v] = ballisticStep(u.v, u.acc, this.dt);
-    if (u.v > 2 && v < 0.5) u.stops++;
+    if (v > 3) u.moving = true;
+    else if (u.moving && v < 0.5) {
+      u.moving = false;
+      u.stops++;
+    }
     u.v = v;
     u.s += ds;
     u.dist += ds;
@@ -1388,7 +1406,22 @@ export class Simulation {
       modeCounts: [...this.modeCounts],
       lineRiders: [...this.busLines.map((l) => l.riders), ...this.mrtLines.map((l) => l.riders)],
       dropped: this.dropped,
+      queueLength: this.corridorQueue(),
     };
+  }
+
+  /** Jarak dari ujung hilir koridor ke kendaraan lambat (< 2 m/s) paling hulu. */
+  corridorQueue(): number {
+    if (!this.corridorLinks.length) return 0;
+    let minPos = Infinity;
+    this.corridorLinks.forEach((li, k) => {
+      for (const lane of this.laneVeh[li])
+        for (const slot of lane) {
+          const u = this.vehicles[slot]!;
+          if (u.s >= 0 && u.v < 2) minPos = Math.min(minPos, this.corridorStart[k] + u.s);
+        }
+    });
+    return minPos === Infinity ? 0 : Math.max(0, this.corridorLength - minPos);
   }
 
   /** Kepadatan per link (kend/km/lajur). */

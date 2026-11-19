@@ -192,6 +192,10 @@ export const id = {
     queue: 'Panjang antrean',
     stops: 'Berhenti per kendaraan',
     delay: 'Tundaan rata-rata',
+    results: 'Hasil per varian',
+    resultsHint: 'Rata-rata sejak pemanasan selesai. Ganti varian untuk mengisi kolom lainnya.',
+    warmingUp: 'Pemanasan… {{s}} dtk lagi',
+    source: 'Sumber',
     stdSpeed: 'Variasi kecepatan',
   },
   transit: {
