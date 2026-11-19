@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | 1 | Scaffold, design tokens, i18n, tema, layout, routing, workflow deploy | ✅ |
 | 2 | Inti simulasi di Worker + test (IDM, graf jalan, routing, sinyal) | ✅ |
-| 3 | Generator kota + rendering instanced + Kota Hidup | ⏳ |
+| 3 | Generator kota + rendering instanced + Kota Hidup | ✅ |
 | 4 | Editor Jalan + simpan/muat/bagikan | ⏳ |
 | 5 | Lab Fenomena | ⏳ |
 | 6 | Transportasi Umum | ⏳ |
@@ -29,3 +29,13 @@
   `simHost.ts` dengan cadangan thread utama bila Worker tidak tersedia. Tanpa SharedArrayBuffer.
 - Benchmark lokal: ±2.500 kendaraan aktif ≈ 3 ms per langkah 0,2 s (Node 22).
 - Detail model & sumber: [model-notes.md](model-notes.md).
+
+## Fase 3 — catatan
+- `src/lib/city/generator.ts`: grid berjitter ber-seed dengan hierarki jalan (arteri 2–3 lajur, lokal 1 lajur), ruas lokal dihapus
+  acak tanpa memutus graf, pasangan jalan satu arah, lampu di simpang arteri, bundaran di pinggiran, zona berlapis dari pusat.
+- `src/lib/city/decor.ts`: gedung, taman, pohon, lampu jalan ditempatkan di sepanjang jalan (berlaku untuk kota apa pun, termasuk buatan editor).
+- Scene R3F: jalan/marka/zebra/lajur bus digabung jadi satu `BufferGeometry`; gedung `InstancedMesh` dengan shader jendela
+  yang menyala saat malam; kendaraan `InstancedMesh` per jenis + interpolasi antar-tick + LOD (kotak sederhana di jauh) + culling frustum;
+  lampu kendaraan & lampu jalan di malam hari; bloom hanya di tema gelap & kualitas ≥ sedang.
+- Kualitas otomatis: tebakan awal dari perangkat + pemantau FPS yang menurunkan kualitas (DPR, bayangan, bloom, batas kendaraan, jarak LOD).
+- Kota Hidup: kontrol waktu (jeda/1×/4×/16×, spasi), siklus siang–malam dari jam simulasi, klik kendaraan → info, rute, kamera mengikuti.
