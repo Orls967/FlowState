@@ -5,7 +5,7 @@
 | 1 | Scaffold, design tokens, i18n, tema, layout, routing, workflow deploy | ✅ |
 | 2 | Inti simulasi di Worker + test (IDM, graf jalan, routing, sinyal) | ✅ |
 | 3 | Generator kota + rendering instanced + Kota Hidup | ✅ |
-| 4 | Editor Jalan + simpan/muat/bagikan | ⏳ |
+| 4 | Editor Jalan + simpan/muat/bagikan | ✅ |
 | 5 | Lab Fenomena | ⏳ |
 | 6 | Transportasi Umum | ⏳ |
 | 7 | Analitik & perbandingan skenario | ⏳ |
@@ -39,3 +39,11 @@
   lampu kendaraan & lampu jalan di malam hari; bloom hanya di tema gelap & kualitas ≥ sedang.
 - Kualitas otomatis: tebakan awal dari perangkat + pemantau FPS yang menurunkan kualitas (DPR, bayangan, bloom, batas kendaraan, jarak LOD).
 - Kota Hidup: kontrol waktu (jeda/1×/4×/16×, spasi), siklus siang–malam dari jam simulasi, klik kendaraan → info, rute, kamera mengikuti.
+
+## Fase 4 — catatan
+- `src/lib/city/edit.ts`: operasi murni (tambah/bagi/hapus simpang & ruas, ubah properti, cari terdekat) — diuji unit.
+- `src/lib/city/serialize.ts`: JSON (divalidasi Zod) dan bentuk ringkas terkompresi lz-string untuk tautan `#/editor?c=…`.
+- Editor: mode Pilih/Gambar/Hapus/Zona/Simulasikan (pintasan V/D/E/Z/S), undo/redo (Ctrl/⌘+Z, Shift+Z, Y) berbasis snapshot,
+  titik baru menempel ke simpang atau membagi ruas terdekat, properti ruas (lajur, batas kecepatan, satu arah, lajur bus)
+  dan simpang (kontrol, zebra cross, durasi hijau per fase, offset, zona & bobot).
+- Simpan/muat JSON, salin tautan bagikan, kanvas kosong / dari generator, lanjut ke Analitik.

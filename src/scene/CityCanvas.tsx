@@ -122,7 +122,7 @@ function CameraRig({
   const span = Math.max(200, bounds.maxX - bounds.minX, bounds.maxY - bounds.minY);
   const key = `${Math.round(cx)}:${Math.round(cy)}:${Math.round(span)}:${topDown ? 1 : 0}`;
   useEffect(() => {
-    const dist = span * (topDown ? 1.05 : 0.42);
+    const dist = span * (topDown ? 1.45 : 0.42);
     if (topDown) camera.position.set(cx, dist, -cy + 0.01);
     else camera.position.set(cx + dist * 0.35, dist * 0.62, -cy + dist * 0.7);
     camera.far = Math.max(4000, span * 6);

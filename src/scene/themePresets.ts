@@ -35,6 +35,10 @@ export interface ScenePreset {
   density: [string, string, string];
   ambient: number;
   sun: number;
+  /** warna zona (editor) */
+  zones: Record<'none' | 'home' | 'office' | 'school' | 'mall', string>;
+  /** warna sorotan editor */
+  highlight: string;
 }
 
 export const PRESETS: Record<Theme, ScenePreset> = {
@@ -66,6 +70,8 @@ export const PRESETS: Record<Theme, ScenePreset> = {
     density: ['#a8dc8c', '#f5b03d', '#c0281f'],
     ambient: 1.25,
     sun: 1.6,
+    zones: { none: '#8a8578', home: '#3f6fb5', office: '#1b1f24', school: '#d8a31a', mall: '#a33d8f' },
+    highlight: '#c8431a',
   },
   dark: {
     background: '#06090e',
@@ -95,6 +101,8 @@ export const PRESETS: Record<Theme, ScenePreset> = {
     density: ['#2e6a4f', '#c9902b', '#ff8a7a'],
     ambient: 0.55,
     sun: 0.9,
+    zones: { none: '#5d6775', home: '#7fb2ff', office: '#e9e6dd', school: '#ffd23f', mall: '#e07ad0' },
+    highlight: '#ff7a45',
   },
 };
 
