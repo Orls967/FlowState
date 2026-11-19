@@ -7,7 +7,6 @@ export const en: Messages = {
     tagline: 'Traffic & city simulation, right in your browser',
     skip: 'Skip to main content',
     loading: 'Loading…',
-    comingSoon: 'This module is under construction.',
     educational: 'Educational tool — not an official planning tool',
   },
   nav: {

@@ -444,8 +444,8 @@ const raw: z.input<typeof GlossaryTerm>[] = [
       en: 'The decision to use a private vehicle or public transport.',
     },
     body: {
-      id: 'FlowState memakai model logit: tiap moda punya biaya umum (waktu dalam kendaraan + 2× waktu jalan kaki + 1,5× waktu tunggu + konstanta). Moda yang lebih murah lebih mungkin dipilih, tetapi tidak selalu — orang berbeda menilai berbeda.',
-      en: 'FlowState uses a logit model: every mode has a generalised cost (in-vehicle time + 2× walking + 1.5× waiting + a constant). Cheaper modes are more likely to be chosen, but not always — people value things differently.',
+      id: 'FlowState memakai model logit: tiap moda punya biaya umum (waktu dalam kendaraan + 1,4× waktu akses + 1,2× waktu tunggu + konstanta; mobil/motor ditambah biaya parkir & BBM). Moda yang lebih murah lebih mungkin dipilih, tetapi tidak selalu — orang berbeda menilai berbeda.',
+      en: 'FlowState uses a logit model: every mode has a generalised cost (in-vehicle time + 1.4× access time + 1.2× waiting + a constant; cars/motorbikes add parking & fuel). Cheaper modes are more likely to be chosen, but not always — people value things differently.',
     },
     related: ['brt', 'mrt', 'demand'],
   },

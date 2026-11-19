@@ -76,3 +76,15 @@
   kendaraan antre (garis 2 px, crosshair + tooltip, legenda + label langsung, tampilan tabel), diagram fundamental (pencar),
   dan heatmap 3D kepadatan akhir per skenario.
 - Palet seri A/B divalidasi (CVD & kontras) untuk tema terang dan gelap (`--fs-series-*`).
+
+## Fase 8 — catatan
+- Glosarium: saring istilah, tautan langsung `#/glossary#<id>`, "lihat juga"; autolink istilah di seluruh konten.
+- Tentang: model & sumber, batasan, privasi, kredit; penegasan alat edukasi (konten dwibahasa Zod, diuji).
+- Pencarian global Ctrl/⌘+K mencakup modul, eksperimen, istilah, dan tindakan (ganti tema/bahasa).
+- Performa HP: `AdaptiveDpr` saat kamera bergerak, simulasi dijeda saat tab tersembunyi, kualitas otomatis + LOD + culling.
+- Test: 64 unit test (Vitest) dan 10 skenario Playwright × 2 proyek (desktop & Pixel 7) — tiap modul, ganti bahasa & tema,
+  pencarian, glosarium, eksperimen Lab, Editor, Transportasi Umum, Analitik.
+- README lengkap.
+
+## Status akhir
+Semua 8 fase selesai. Deploy membutuhkan GitHub Pages diaktifkan dengan sumber **GitHub Actions** (Settings → Pages).

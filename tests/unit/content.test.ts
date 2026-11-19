@@ -63,3 +63,15 @@ describe('autolink glosarium', () => {
     expect(links(autoLink('kapasitasnya', 'id'))).toBe(0);
   });
 });
+
+import { ABOUT, AboutSection } from '../../src/content/about';
+
+describe('halaman Tentang', () => {
+  it('lolos skema dwibahasa dan menegaskan sifat edukasi', () => {
+    for (const s of ABOUT) expect(AboutSection.safeParse(s).success).toBe(true);
+    const what = ABOUT.find((s) => s.id === 'what')!;
+    expect(what.body.id).toMatch(/BUKAN alat perencanaan resmi/);
+    expect(what.body.en).toMatch(/NOT an official planning tool/);
+    expect(ABOUT.some((s) => s.id === 'limits' && s.items.length >= 4)).toBe(true);
+  });
+});

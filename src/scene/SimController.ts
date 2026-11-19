@@ -249,6 +249,15 @@ export function useSimController(): SimController {
     c.revive();
     return () => c.dispose();
   }, [c]);
+  // hemat baterai: hentikan simulasi saat tab tidak terlihat, lanjutkan seperti semula saat kembali
+  useEffect(() => {
+    const onVis = () => {
+      const paused = c.store.getState().paused;
+      c.host.post({ type: 'pause', paused: document.hidden || paused });
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, [c]);
   return c;
 }
 

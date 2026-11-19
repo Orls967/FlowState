@@ -5,7 +5,6 @@ export const id = {
     tagline: 'Simulasi lalu lintas & kota, langsung di peramban',
     skip: 'Lompat ke konten utama',
     loading: 'Memuat…',
-    comingSoon: 'Modul ini sedang dibangun.',
     educational: 'Alat edukasi — bukan alat perencanaan resmi',
   },
   nav: {

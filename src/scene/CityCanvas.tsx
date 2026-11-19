@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
-import { MapControls } from '@react-three/drei';
+import { AdaptiveDpr, MapControls } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { Color, DirectionalLight, Fog, HemisphereLight } from 'three';
 import type { MapControls as MapControlsImpl } from 'three-stdlib';
@@ -240,6 +240,7 @@ export function CityCanvas({
         dpr={[1, q.dpr]}
         shadows={q.shadows}
         gl={{ antialias: quality !== 'low', powerPreference: 'high-performance' }}
+        performance={{ min: 0.5 }}
         camera={{ fov: 45, near: 2, far: 6000, position: [0, 600, 600] }}
         onCreated={({ gl }) => {
           gl.domElement.setAttribute('aria-label', '3D');
@@ -257,6 +258,8 @@ export function CityCanvas({
             fit={fit ?? (topDown ? 1 : 0.55)}
           />
           <QualityMonitor />
+          {/* turunkan resolusi sementara saat kamera bergerak (hemat GPU di HP) */}
+          <AdaptiveDpr />
           {children}
           {q.bloom && theme === 'dark' && (
             <EffectComposer multisampling={0}>
