@@ -8,7 +8,7 @@
 | 4 | Editor Jalan + simpan/muat/bagikan | ✅ |
 | 5 | Lab Fenomena | ✅ |
 | 6 | Transportasi Umum | ✅ |
-| 7 | Analitik & perbandingan skenario | ⏳ |
+| 7 | Analitik & perbandingan skenario | ✅ |
 | 8 | Glosarium, pencarian, Tentang, optimasi HP, test, README | ⏳ |
 
 ## Fase 1 — catatan
@@ -68,3 +68,11 @@
   waktu tempuh, kecepatan, kepadatan, emisi relatif per perjalanan, jumlah kendaraan, porsi moda.
   Contoh (kota bawaan, BRT + MRT): kendaraan −10%, kepadatan −11%, emisi/perjalanan −6%.
 - Model akses feeder/ojek untuk jarak > 400 m; konstanta logit dikalibrasi untuk peragaan (lihat model-notes).
+
+## Fase 7 — catatan
+- Analitik: dua skenario (sumber: Kota Hidup / generator ber-seed / Editor / skenario Lab dari tautan kontekstual),
+  pengali permintaan, pengali durasi hijau, angkutan umum on/off, durasi 30/60/120 menit, jam mulai.
+- Dua Worker berjalan paralel tanpa tampilan; hasil: tabel ringkasan dengan selisih B − A, grafik waktu tempuh, throughput,
+  kendaraan antre (garis 2 px, crosshair + tooltip, legenda + label langsung, tampilan tabel), diagram fundamental (pencar),
+  dan heatmap 3D kepadatan akhir per skenario.
+- Palet seri A/B divalidasi (CVD & kontras) untuk tema terang dan gelap (`--fs-series-*`).

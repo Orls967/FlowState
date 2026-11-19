@@ -532,3 +532,43 @@ export function Trains({ c }: { c: SimController }) {
     </instancedMesh>
   );
 }
+
+/** Heatmap dari larik kepadatan tetap (hasil simulasi tanpa tampilan). */
+export function StaticHeatmap({ net, densities }: { net: Network; densities: Float32Array }) {
+  const { theme } = useSceneCtx();
+  const ref = useRef<InstancedMesh>(null);
+  const geo = useMemo(() => new PlaneGeometry(1, 1).rotateX(-Math.PI / 2), []);
+  const scale = useMemo(() => densityScale(theme), [theme]);
+  useLayoutEffect(() => {
+    const m = ref.current;
+    if (!m) return;
+    const arr = m.instanceMatrix.array as Float32Array;
+    for (const l of net.links) {
+      const offs = l.laneOffsets;
+      const mid = offs.reduce((a, b) => a + b, 0) / offs.length;
+      const cx = (l.x0 + l.x1) / 2 + l.nx * mid;
+      const cy = (l.y0 + l.y1) / 2 + l.ny * mid;
+      writeMatrix(
+        arr,
+        l.index,
+        cx,
+        0.24,
+        -cy,
+        Math.atan2(l.dy, l.dx),
+        Math.max(1, l.length),
+        1,
+        offs.length * 3.3 - 0.4,
+      );
+      m.setColorAt(l.index, scale(densities[l.index] ?? 0));
+    }
+    m.instanceMatrix.needsUpdate = true;
+    if (m.instanceColor) m.instanceColor.needsUpdate = true;
+    m.computeBoundingSphere();
+  }, [net, densities, scale]);
+  if (!net.links.length) return null;
+  return (
+    <instancedMesh key={net.links.length} ref={ref} args={[geo, undefined, net.links.length]}>
+      <meshBasicMaterial transparent opacity={0.9} toneMapped={false} depthWrite={false} />
+    </instancedMesh>
+  );
+}
